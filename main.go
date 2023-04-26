@@ -7,17 +7,44 @@ import (
 	"strings"
 )
 
-func main() {
-	incomingData := []Data{}
+type DTO struct {
+	Name  string
+	Value float64
+	Unit  string
+}
 
-	err := json.Unmarshal([]byte(sniderData), &incomingData)
+type Data struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+	Unit  string `json:"unit"`
+}
+
+func main() {
+
+	transformedData := transformData([]byte(sniderData))
+
+	fmt.Println(transformedData)
+
+	for _, object := range transformedData {
+		if object.Unit == "°C" {
+			fmt.Printf("temperature is: %f\n", object.Value) //TODO:change to lwm2m model
+		} else if object.Unit == "Wh" || object.Unit == "W" {
+			fmt.Printf("consumption is: %f\n", object.Value) //TODO:change to lwm2m model
+		}
+	}
+}
+
+func transformData(incomingData []byte) []DTO {
+	data := []Data{}
+
+	err := json.Unmarshal(incomingData, &data)
 	if err != nil {
 		panic(fmt.Errorf("it didn't work: %s", err.Error()))
 	}
 
 	transformedData := []DTO{}
 
-	for _, object := range incomingData {
+	for _, object := range data {
 		transformedObject := DTO{}
 
 		trimmedName, err := trimName(object.Name)
@@ -34,10 +61,12 @@ func main() {
 
 		transformedObject.Value = parsedvalue
 
+		transformedObject.Unit = object.Unit
+
 		transformedData = append(transformedData, transformedObject)
 	}
 
-	fmt.Println(transformedData)
+	return transformedData
 }
 
 func trimName(name string) (string, error) {
@@ -51,16 +80,6 @@ func trimName(name string) (string, error) {
 	trimmedsuffix := strings.TrimSuffix(trimmedprefix, suffix)
 
 	return trimmedsuffix, nil
-}
-
-type DTO struct {
-	Name  string
-	Value float64
-}
-
-type Data struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
 }
 
 const sniderData string = `[{
