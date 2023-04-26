@@ -8,50 +8,49 @@ import (
 )
 
 func main() {
-	bacon := []Data{}
+	incomingData := []Data{}
 
-	err := json.Unmarshal([]byte(sniderData), &bacon)
+	err := json.Unmarshal([]byte(sniderData), &incomingData)
 	if err != nil {
-		panic(fmt.Errorf("it didnt work: %s", err.Error()))
+		panic(fmt.Errorf("it didn't work: %s", err.Error()))
 	}
 
-	cookedbacon := []DTO{}
+	transformedData := []DTO{}
 
-	for _, value := range bacon {
-		cookedslice := DTO{}
+	for _, object := range incomingData {
+		transformedObject := DTO{}
 
-		trimedName, err := trimName(value.Name)
+		trimmedName, err := trimName(object.Name)
 		if err != nil {
 			panic(err.Error())
 		}
 
-		cookedslice.Name = trimedName
+		transformedObject.Name = trimmedName
 
-		parsedvalue, err := strconv.ParseFloat(value.Value, 64)
+		parsedvalue, err := strconv.ParseFloat(object.Value, 64)
 		if err != nil {
-			panic(fmt.Errorf("couldnt parse float from string"))
+			panic(fmt.Errorf("couldn't parse float from string"))
 		}
 
-		cookedslice.Value = parsedvalue
+		transformedObject.Value = parsedvalue
 
-		cookedbacon = append(cookedbacon, cookedslice)
+		transformedData = append(transformedData, transformedObject)
 	}
 
-	fmt.Println(cookedbacon)
+	fmt.Println(transformedData)
 }
 
 func trimName(name string) (string, error) {
 	if name == "" {
-		return "", fmt.Errorf("cant paste empty name")
+		return "", fmt.Errorf("can't paste empty name")
 	}
 	prefix := "/Enterprise Server Mitthem/IoT-gränssnitt/MQTT-klient/!UC_Framåt/"
 	suffix := "/Value"
 
-	trimedprefix := strings.TrimPrefix(name, prefix)
+	trimmedprefix := strings.TrimPrefix(name, prefix)
+	trimmedsuffix := strings.TrimSuffix(trimmedprefix, suffix)
 
-	trimedsuffix := strings.TrimSuffix(trimedprefix, suffix)
-
-	return trimedsuffix, nil
+	return trimmedsuffix, nil
 }
 
 type DTO struct {
