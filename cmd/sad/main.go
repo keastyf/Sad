@@ -28,8 +28,10 @@ func main() {
 	for _, object := range transformedData {
 		if object.Unit == "°C" {
 			fmt.Printf("temperature is: %f\n", object.Value) //TODO:change to lwm2m model
-		} else if object.Unit == "Wh" || object.Unit == "W" {
+		} else if object.Unit == "Wh" {
 			fmt.Printf("consumption is: %f\n", object.Value) //TODO:change to lwm2m model
+		} else if object.Unit == "W" {
+			fmt.Printf("power is: %f\n", object.Value) //TODO:change to lwm2m model
 		}
 	}
 }
